@@ -1,32 +1,27 @@
-- name: Install key for Cloudera repository
-  rpm_key:  state=present key=https://archive.cloudera.com/cdh5/redhat/7/x86_64/cdh/RPM-GPG-KEY-cloudera
-  when: ansible_os_family == 'RedHat'
+- name: Ensure Cloudera Manager repo exists
+  get_url:
+    url: "{{ CM_REPO_URL }}"
+    dest: /etc/yum.repos.d/cm.repo
 
-- name: Install Cloudera Manager repo
-  yum_repository: baseurl=https://archive.cloudera.com/cm5/redhat/7/x86_64/cm/5/ state=present gpgcheck=1 name=ClouderaManager description="Repository to provide Cloudera Manager packages"
+- name: Ensure Cloudera Manager Agent is installed
+  yum:
+    name: cloudera-manager-agent
+    state: present
 
-- name: Install necessary packages
-  yum: name={{ item }} update_cache=yes state=present
-  with_items:
-    - cloudera-manager-daemons
-    - cloudera-manager-agent
-
-- name: Create cloudera agent config
+- name: Ensure Cloudera Manager Agent configuration is up-to-date
   template:
     src: config.ini.j2
     dest: /etc/cloudera-scm-agent/config.ini
-    owner:
-    group:
+  notify: restart cloudera manager agent
 
-- name: Start Cloudera Agent
+- name: Ensure JDK is installed
+  yum:
+    name: "{{ CM_JDK_PACKAGE }}"
+    state: present
+  when: CM_INSTALL_JDK
+
+- name: Ensure Cloudera Manager Agent is started
   service:
     name: cloudera-scm-agent
     state: started
     enabled: yes
-
-- name: Create Hive lib dir
-  file:
-    state: directory
-    recurse: yes
-    path: /opt/local/hive/lib
-    mode: 0777

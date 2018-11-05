@@ -1,3 +1,4 @@
----
-- name: restart cm-agent
-  service: name=cloudera-scm-agent state=restarted
+- name: restart cloudera manager agent
+  service:
+    name: cloudera-scm-agent
+    state: restarted
