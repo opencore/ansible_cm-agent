@@ -3,6 +3,12 @@
     url: "{{ CM_REPO_URL }}"
     dest: /etc/yum.repos.d/cm.repo
 
+- name: Ensure JDK is installed
+  yum:
+    name: "{{ CM_JDK_PACKAGE }}"
+    state: present
+  when: CM_INSTALL_JDK
+
 - name: Ensure Cloudera Manager Agent is installed
   yum:
     name: cloudera-manager-agent
@@ -14,14 +20,17 @@
     dest: /etc/cloudera-scm-agent/config.ini
   notify: restart cloudera manager agent
 
-- name: Ensure JDK is installed
-  yum:
-    name: "{{ CM_JDK_PACKAGE }}"
-    state: present
-  when: CM_INSTALL_JDK
-
 - name: Ensure Cloudera Manager Agent is started
   service:
     name: cloudera-scm-agent
     state: started
     enabled: yes
+
+- name: Ensure rpcbind is disabled
+  systemd:
+    name: "{{ item }}"
+    state: stopped
+    enabled: no
+  loop:
+    - rpcbind
+    - rpcbind.socket
