@@ -1,8 +1,8 @@
 # CM 5
 # CM_REPO_URL: https://archive.cloudera.com/cm5/redhat/7/x86_64/cm/cloudera-manager.repo
 
-# CM 6.1
-CM_REPO_URL: https://archive.cloudera.com/cm6/6.1.1/redhat7/yum/cloudera-manager.repo
+# CM 6.2
+CM_REPO_URL: https://archive.cloudera.com/cm6/6.2.0/redhat7/yum/cloudera-manager.repo
 
 CM_SERVER_NAME: localhost
 CM_SERVER_PORT: 7182
